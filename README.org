@@ -1,0 +1,52 @@
+#+TITLE: Vagrant + Ansible to automate deployment of Linux virtual machines
+
+Vagrant with Ansible as the provisioner to create virtual machines that automatically install programs such as Docker and setup configurations. This is useful to ensure that everyone has the same machine for development purposes or in a big company that all the machines are setup the same way across locations for ease of installation and maintainability.
+
+* Requirements
+1. VMware Esxi hypervisor (although configs can be changed easily for others such as VMware, Virtualbox, Proxmox etc.
+2. Debian Linux machine (we're using Debian 10 but instructions should be similar on Debian based distros)
+
+
+* How to install Vagrant and Ansible
+** Vagrant
+You can head over to https://www.vagrantup.com/downloads to download the latest package of Vagrant on your OS. Or use the below command to download the link with curl.
+
+#+begin_src sh
+curl -O https://releases.hashicorp.com/vagrant/2.2.14/vagrant_2.2.14_x86_64.deb
+sudo apt update
+sudo apt install ./vagrant_2.2.14_x86_64.deb
+#+end_src
+
+ESXi specific (skip if not related)
+1. Enable ssh in ESXi
+2. Install vmware ovf tool https://www.vmware.com/support/developer/ovf/
+3. Finally, install the VMware plug in  https://github.com/josenk/vagrant-vmware-esxi
+
+
+** Ansible
+https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#installing-ansible-on-debian
+
+1. Add the following line to /etc/apt/sources.list:
+#+begin_src
+deb http://ppa.launchpad.net/ansible/ansible/ubuntu trusty main
+#+end_src
+
+2. Run the commands
+#+begin_src sh
+sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 93C4A3FD7BB9C367
+sudo apt update
+sudo apt install ansible
+#+end_src
+* How to run
+
+Download the repo
+#+begin_src sh
+git clone https://github.com/Hoang23/Vagrant-Ansible-Provisioning
+cd Vagrant-Ansible-Provisioning
+#+end_src
+
+Configure the Vagrant, Ansible playbook, and env files to meet your needs. For example the esxi_hostname and other configs can be changed directly in the Vagrant file or in the yml such as env.yml. After doing so, run 'vagrant up' to launch the vm!
+
+#+begin_src sh
+vagrant up # for esxi: vagrant up --provider=vmware_esxi
+#+end_src

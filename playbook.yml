@@ -1,0 +1,54 @@
+---
+- name: Configure virtual machine
+  hosts: all
+  become: yes
+
+  tasks:
+  - name: Update the apt package index
+    become: yes
+    apt:
+      name: "*"
+      state: latest
+      update_cache: yes
+      force_apt_get: yes
+  - name: Install packages in apt repository
+    become: yes
+    apt:
+      name: "{{ packages }}"
+      force_apt_get: yes
+      state: latest
+      update_cache: yes
+    vars:
+      packages:
+      - git
+      - apt-transport-https
+      - ca-certificates
+      - wget
+      - software-properties-common
+      - gnupg2
+      - curl
+      - tmux
+      - net-tools
+      - build-essential # c compiler, make program etc. 
+       
+  - name: uri github api
+    uri:                                                               
+      url: https://api.github.com/repos/ansible/ansible/releases/latest
+      return_content: true                                             
+    register: json_reponse                                             
+
+  - name: install 
+    get_url:                                                           
+      url: "{{ json_reponse.json.tarball_url }}"                       
+      dest: ./ansible-latest.tar.gz 
+     
+  - name: install syncthing package not in apt through shell
+    shell: |
+      ### Docker
+      sudo curl -sSL https://get.docker.com/ | sh
+      ### Docker-compose
+      # Run this command to download the current stable release of Docker Compose:
+      sudo curl -L "https://github.com/docker/compose/releases/download/1.27.4/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose 
+      # apply executable permissions to binary
+      sudo chmod +x /usr/local/bin/docker-compose
+     
